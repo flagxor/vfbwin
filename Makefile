@@ -8,7 +8,7 @@ ifeq ($(UNAME_S),Darwin)
   LDFLAGS=-L/usr/local/lib \
 					-L/usr/local/Cellar/osxfuse/2.8.3/lib \
 					-mmacosx-version-min=10.5
-  LIBS=-losxfuse -framework Cocoa
+  LIBS=-lfuse -framework Cocoa
 	MAIN=main_osx.m
 else
   CFLAGS=$(CFLAGS_COMMON)
