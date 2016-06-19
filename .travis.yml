@@ -1,6 +1,10 @@
 language: c++
 
-sudo: off
+sudo: on
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libfuse-dev
 
 install: true
 
