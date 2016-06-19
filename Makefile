@@ -5,7 +5,7 @@ ifeq ($(UNAME_S),Darwin)
   CFLAGS=$(CFLAGS_COMMON) -I/usr/local/include/osxfuse -D_FILE_OFFSET_BITS=64
   LDFLAGS=-L/usr/local/lib -mmacosx-version-min=10.5
   LIBS=-lfuse -framework Cocoa
-	MAIN=main_x11.m
+	MAIN=main_osx.m
 else
   CFLAGS=$(CFLAGS_COMMON)
   LDFLAGS=
