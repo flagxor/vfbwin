@@ -1,0 +1,11 @@
+language: c++
+
+sudo: off
+
+install: true
+
+script: make
+
+os:
+  - linux
+  - osx
