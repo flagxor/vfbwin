@@ -2,8 +2,12 @@ UNAME_S := $(shell uname -s)
 
 CFLAGS_COMMON=-D_FILE_OFFSET_BITS=64
 ifeq ($(UNAME_S),Darwin)
-  CFLAGS=$(CFLAGS_COMMON) -I/usr/local/include/osxfuse -D_FILE_OFFSET_BITS=64
-  LDFLAGS=-L/usr/local/lib -mmacosx-version-min=10.5
+  CFLAGS=$(CFLAGS_COMMON) \
+				 -I/usr/local/include/osxfuse \
+				 -D_FILE_OFFSET_BITS=64
+  LDFLAGS=-L/usr/local/lib \
+					-L/use/local/opt/lib \
+					-mmacosx-version-min=10.5
   LIBS=-lfuse -framework Cocoa
 	MAIN=main_osx.m
 else
