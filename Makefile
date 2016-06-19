@@ -2,13 +2,19 @@ UNAME_S := $(shell uname -s)
 
 CFLAGS_COMMON=-D_FILE_OFFSET_BITS=64
 ifeq ($(UNAME_S),Darwin)
+  OSXFUSE_LIB_DIR := /usr/local/Cellar/osxfuse/2.8.3/lib
+  ifneq ("$(wildcard $(OSX_FUSE_LIB_DIR))","")
+	  FUSE_LIB_DIR := $(OSX_FUSE_LIB_DIR)
+    LIBS=-losxfuse -framework Cocoa
+  else
+	  FUSE_LIB_DIR := /usr/local/lib
+    LIBS=-lfuse -framework Cocoa
+  endif
   CFLAGS=$(CFLAGS_COMMON) \
 				 -I/usr/local/include/osxfuse \
 				 -D_FILE_OFFSET_BITS=64
-  LDFLAGS=-L/usr/local/lib \
-					-L/usr/local/Cellar/osxfuse/2.8.3/lib \
+  LDFLAGS=-L$(FUSE_LIB_DIR) \
 					-mmacosx-version-min=10.5
-  LIBS=-lfuse -framework Cocoa
 	MAIN=main_osx.m
 else
   CFLAGS=$(CFLAGS_COMMON)
