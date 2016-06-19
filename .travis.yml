@@ -2,13 +2,13 @@ language: c++
 
 sudo: on
 
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq libfuse-dev
+before_install: ./install-dependencies.sh
 
 install: true
 
-script: make
+script:
+  - make clean
+  - make
 
 os:
   - linux
