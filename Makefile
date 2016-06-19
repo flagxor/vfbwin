@@ -6,7 +6,7 @@ ifeq ($(UNAME_S),Darwin)
 				 -I/usr/local/include/osxfuse \
 				 -D_FILE_OFFSET_BITS=64
   LDFLAGS=-L/usr/local/lib \
-					-L/usr/local/opt/lib \
+					-L/usr/local/opt/osxfuse \
 					-mmacosx-version-min=10.5
   LIBS=-lfuse -framework Cocoa
 	MAIN=main_osx.m
