@@ -3,8 +3,8 @@ UNAME_S := $(shell uname -s)
 CFLAGS_COMMON=-D_FILE_OFFSET_BITS=64
 ifeq ($(UNAME_S),Darwin)
   OSXFUSE_LIB_DIR := /usr/local/Cellar/osxfuse/2.8.3/lib
-  ifneq ("$(wildcard $(OSX_FUSE_LIB_DIR))","")
-	  FUSE_LIB_DIR := $(OSX_FUSE_LIB_DIR)
+  ifneq ("$(wildcard $(OSXFUSE_LIB_DIR))","")
+	  FUSE_LIB_DIR := $(OSXFUSE_LIB_DIR)
     LIBS=-losxfuse -framework Cocoa
   else
 	  FUSE_LIB_DIR := /usr/local/lib
