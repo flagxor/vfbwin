@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include "vfbwin.h"
@@ -38,23 +39,29 @@ int main(int argc, char *argv[]) {
   int width = 1;
   int height = 1;
   while (!done) {
-    XEvent event;
-    XNextEvent(display, &event);
-    switch (event.type) {
-      case KeyPress:
-      case ButtonPress:
-        done = 1;
-        break;
+    if (XPending(display) > 0) {
+      XEvent event;
+      XNextEvent(display, &event);
+      switch (event.type) {
+        case KeyPress:
+        case ButtonPress:
+          done = 1;
+          break;
 
-      case ConfigureNotify:
-        width = event.xconfigure.width;
-        height = event.xconfigure.height;
-        break;
+        case ConfigureNotify:
+          width = event.xconfigure.width;
+          height = event.xconfigure.height;
+          break;
 
-      case Expose:
-        if (event.xexpose.count) break;
-        XPutImage(display, window, gc, image, 0, 0, 0, 0, width, height);
-        break;
+        case Expose:
+          if (event.xexpose.count) break;
+          XPutImage(display, window, gc, image, 0, 0, 0, 0, width, height);
+          break;
+      }
+    }
+    if (dirty) {
+      dirty = 0;
+      XPutImage(display, window, gc, image, 0, 0, 0, 0, width, height);
     }
   }
 

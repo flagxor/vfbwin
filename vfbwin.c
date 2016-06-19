@@ -94,12 +94,19 @@ static int vfbwin_fsetattr_x(
     struct fuse_file_info *fi) {
   return 0;
 }
+#else
+static int vfbwin_setxattr(
+    const char *name, const char *x, const char *y, size_t z, int w) {
+  return 0;
+}
 #endif
 
 static struct fuse_operations vfbwin_ops = {
 	.getattr = vfbwin_getattr,
 #if defined(__APPLE__)
 	.fsetattr_x = vfbwin_fsetattr_x,
+#else
+	.setxattr = vfbwin_setxattr,
 #endif
 	.readdir = vfbwin_readdir,
 	.open	= vfbwin_open,
