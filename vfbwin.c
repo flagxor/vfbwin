@@ -88,15 +88,19 @@ static int vfbwin_flush(const char *filename, struct fuse_file_info *fi) {
   return 0;
 }
 
+#if defined(__APPLE__)
 static int vfbwin_fsetattr_x(
     const char *name, struct setattr_x *attr,
     struct fuse_file_info *fi) {
   return 0;
 }
+#endif
 
 static struct fuse_operations vfbwin_ops = {
 	.getattr = vfbwin_getattr,
+#if defined(__APPLE__)
 	.fsetattr_x = vfbwin_fsetattr_x,
+#endif
 	.readdir = vfbwin_readdir,
 	.open	= vfbwin_open,
 	.read	= vfbwin_read,

@@ -1,8 +1,19 @@
-CFLAGS=-I/usr/local/include/osxfuse -D_FILE_OFFSET_BITS=64
-LDFLAGS=-L/usr/local/lib -mmacosx-version-min=10.5
-LIBS=-lfuse -framework Cocoa
+UNAME_S := $(shell uname -s)
 
-vfbwin: vfbwin.c main.m
+CFLAGS_COMMON=-D_FILE_OFFSET_BITS=64
+ifeq ($(UNAME_S),Darwin)
+  CFLAGS=$(CFLAGS_COMMON) -I/usr/local/include/osxfuse -D_FILE_OFFSET_BITS=64
+  LDFLAGS=-L/usr/local/lib -mmacosx-version-min=10.5
+  LIBS=-lfuse -framework Cocoa
+	MAIN=main_x11.m
+else
+  CFLAGS=$(CFLAGS_COMMON)
+  LDFLAGS=
+  LIBS=-lfuse -lX11 -pthread
+	MAIN=main_x11.c
+endif
+
+vfbwin: vfbwin.c $(MAIN)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 mount: vfbwin
