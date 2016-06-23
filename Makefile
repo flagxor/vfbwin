@@ -40,7 +40,7 @@ test1: vfbwin
 test2: vfbwin
 	mkdir -p dev/ && ./vfbwin& ./4spire.fs
 
-test2a: vfbwin
+test2a: vfbwin 4spire
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire
 
 clean:

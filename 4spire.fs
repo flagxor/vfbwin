@@ -23,8 +23,9 @@ fvariable fx fvariable fy
 : f>rgb ( f f f --- rbb ) f>col f>col 256 * + f>col 256 * 256 * + ;
 
 : 4spire-color
-  fx f@ fx f@ 23e f* fsin 2e f/ fy f@ fmax f/ fsin
-  fy f@ fx f@ 23e f* fsin 2e f/ fy f@ fmax f/ fsin
+  fx f@ 23e f* fsin 2e f/ fy f@ fmax
+  fx f@ fover f/ fsin
+  fswap fy f@ f/ fsin
   fover fover f/ fsin f>rgb
 ;
 
@@ -42,7 +43,7 @@ fvariable fx fvariable fy
 
 : animate
   4spire display flip
-  100 pos +!
+  1 pos +!
 ;
 
 : main
