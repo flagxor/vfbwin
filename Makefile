@@ -29,6 +29,12 @@ vfbwin: vfbwin.c $(MAIN)
 mount: vfbwin
 	mkdir -p dev/ && ./vfbwin
 
+test1: vfbwin
+	mkdir -p dev/ && ./vfbwin& ./pattern.fs
+
+test2: vfbwin
+	mkdir -p dev/ && ./vfbwin& ./4spire.fs
+
 clean:
 	rm -f vfbwin
 	if [ -d dev ]; then rmdir dev; fi

@@ -21,7 +21,10 @@ int main(int argc, char *argv[]) {
 			WIDTH, HEIGHT, 32, WIDTH * 4);
   volatile int dirty = 0;
   volatile int vsync = 0;
-  vfbwin_start(pix, WIDTH, HEIGHT, &dirty, &vsync);
+  if (vfbwin_start(pix, WIDTH, HEIGHT, &dirty, &vsync)) {
+    fprintf(stderr, "fuse mount failed\n");
+    return 1;
+  }
 
   unsigned long black = XBlackPixel(display, screen);
   unsigned long white = XWhitePixel(display, screen);
@@ -65,6 +68,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  vfbwin_stop();
 	XDestroyImage(image);
   XFreeGC(display, gc);
   XCloseDisplay(display);

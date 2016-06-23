@@ -5,8 +5,9 @@
 extern "C" {
 #endif
 
-extern void vfbwin_start(
+extern int vfbwin_start(
     void* data, int w, int h, volatile int *dirty, volatile int *vsync);
+extern void vfbwin_stop(void);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,7 @@
 #include "vfbwin.h"
 #define FUSE_USE_VERSION 30
 #include <fuse.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,20 +9,25 @@
 #include <fcntl.h>
 #include <pthread.h>
 
-#define FBWIN_DEV_PATH "/fb0"
+#define VFBWIN_MOUNT_DIR "dev"
+#define VFBWIN_DEV_PATH "/fb0"
 
+static pthread_t vfbwin_pthread = 0;
 static char *vfbwin_data = 0;
 static int vfbwin_width = 0;
 static int vfbwin_height = 0;
 static volatile int *vfbwin_dirty = 0;
 static volatile int *vfbwin_vsync = 0;
+static struct fuse *vfbwin_fuse;
+static char *vfbwin_mountpoint;
+
 
 static int vfbwin_getattr(const char *path, struct stat *stbuf) {
 	memset(stbuf, 0, sizeof(*stbuf));
 	if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
 		stbuf->st_nlink = 2;
-	} else if (strcmp(path, FBWIN_DEV_PATH) == 0) {
+	} else if (strcmp(path, VFBWIN_DEV_PATH) == 0) {
 		stbuf->st_mode = S_IFREG | 0666;
 		stbuf->st_nlink = 1;
 		stbuf->st_size = vfbwin_width * vfbwin_height * 4;
@@ -43,13 +49,13 @@ static int vfbwin_readdir(
 
 	filler(buf, ".", NULL, 0);
 	filler(buf, "..", NULL, 0);
-	filler(buf, FBWIN_DEV_PATH + 1, NULL, 0);
+	filler(buf, VFBWIN_DEV_PATH + 1, NULL, 0);
 
 	return 0;
 }
 
 static int vfbwin_open(const char *path, struct fuse_file_info *fi) {
-	if (strcmp(path, FBWIN_DEV_PATH) != 0) {
+	if (strcmp(path, VFBWIN_DEV_PATH) != 0) {
 		return -ENOENT;
   }
 	return 0;
@@ -116,18 +122,36 @@ static struct fuse_operations vfbwin_ops = {
 };
 
 static void *vfbwin_thread(void *arg) {
-  char *argv[] = {"vfbwin", "-f", "dev/"};
-  exit(fuse_main(3, argv, &vfbwin_ops, NULL));
+  int res;
+  res = fuse_loop_mt(vfbwin_fuse);
+  fuse_teardown(vfbwin_fuse, vfbwin_mountpoint);
   return 0;
 }
 
-void vfbwin_start(
+int vfbwin_start(
     void* data, int w, int h, volatile int *dirty, volatile int *vsync) {
+  assert(vfbwin_pthread == 0);
   vfbwin_data = data;
   vfbwin_width = w;
   vfbwin_height = h;
   vfbwin_dirty = dirty;
   vfbwin_vsync = vsync;
-  pthread_t pth;
-  pthread_create(&pth, NULL, vfbwin_thread, NULL);
+  char *argv[] = {"vfbwin", "-f", VFBWIN_MOUNT_DIR};
+  int multithreaded;
+  vfbwin_fuse = fuse_setup(
+      3, argv, &vfbwin_ops, sizeof(vfbwin_ops),
+      &vfbwin_mountpoint, &multithreaded, 0);
+  if (!vfbwin_fuse) {
+    return 1;
+  }
+  assert(multithreaded);
+  pthread_create(&vfbwin_pthread, NULL, vfbwin_thread, NULL);
+}
+
+void vfbwin_stop(void) {
+  assert(vfbwin_pthread != 0);
+  fuse_exit(vfbwin_fuse);
+  open(VFBWIN_MOUNT_DIR, O_RDONLY);
+  pthread_join(vfbwin_pthread, 0);
+  vfbwin_pthread = 0;
 }

@@ -31,7 +31,11 @@
                 colorSpaceName:NSCalibratedRGBColorSpace
                    bytesPerRow:WIDTH*4
                   bitsPerPixel:0];
-  vfbwin_start(data_, WIDTH, HEIGHT, &dirty_, &vsync_);
+  if (vfbwin_start(data_, WIDTH, HEIGHT, &dirty_, &vsync_)) {
+    fprintf(stderr, "fuse mount failed\n");
+    exit(1);
+    return self;
+  }
 
   if (self = [super init]) {
     [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self
@@ -41,6 +45,7 @@
 }
 
 - (void)dealloc {
+  vfbwin_stop();
   free(data_);
   [imageRep_ release];
   [lastImage_ release];
