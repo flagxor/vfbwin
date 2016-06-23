@@ -1,6 +1,6 @@
 UNAME_S := $(shell uname -s)
 
-CFLAGS_COMMON=-D_FILE_OFFSET_BITS=64
+CFLAGS_COMMON=-D_FILE_OFFSET_BITS=64 -O2
 ifeq ($(UNAME_S),Darwin)
   OSXFUSE_LIB_DIR := /usr/local/Cellar/osxfuse/2.8.3/lib
   ifneq ("$(wildcard $(OSXFUSE_LIB_DIR))","")
@@ -23,8 +23,13 @@ else
 	MAIN=main_x11.c
 endif
 
+all: vfbwin 4spire
+
 vfbwin: vfbwin.c $(MAIN)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
+
+4spire: 4spire.c
+	$(CC) -O2 $^ -o $@ -lm
 
 mount: vfbwin
 	mkdir -p dev/ && ./vfbwin
@@ -35,6 +40,9 @@ test1: vfbwin
 test2: vfbwin
 	mkdir -p dev/ && ./vfbwin& ./4spire.fs
 
+test2a: vfbwin
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire
+
 clean:
-	rm -f vfbwin
+	rm -f vfbwin 4spire
 	if [ -d dev ]; then rmdir dev; fi
