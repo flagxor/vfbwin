@@ -45,7 +45,6 @@
 }
 
 - (void)dealloc {
-  vfbwin_stop();
   free(data_);
   [imageRep_ release];
   [lastImage_ release];
@@ -74,6 +73,11 @@
     dirty_ = 0;
     [self setNeedsDisplay:YES];
   }
+}
+
+- (void) mouseDown: (NSEvent*) theEvent {
+  vfbwin_stop();
+  [NSApp performSelector:@selector(terminate:) withObject:nil afterDelay:0.0];
 }
 
 @end
