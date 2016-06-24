@@ -35,10 +35,10 @@ mount: vfbwin
 	mkdir -p dev/ && ./vfbwin
 
 test1: vfbwin
-	mkdir -p dev/ && ./vfbwin& ./pattern.fs
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./pattern.fs
 
 test2: vfbwin
-	mkdir -p dev/ && ./vfbwin& ./4spire.fs
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire.fs
 
 test2a: vfbwin 4spire
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire
