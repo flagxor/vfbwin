@@ -20,12 +20,12 @@ variable pos
 fvariable fx fvariable fy
 
 : f>col ( f -- n ) 255e f* 0e fmax 255e fmin f>s ;
-: f>rgb ( f f f --- rbb ) f>col f>col 256 * + f>col 256 * 256 * + ;
+: f>rgb ( f f f --- rbb ) f>col 65536 * f>col 256 * + f>col + ;
 
 : 4spire-color
   fx f@ 23e f* fsin 2e f/ fy f@ fmax
   fx f@ fover f/ fsin
-  fswap fy f@ f/ fsin
+  fswap fy f@ fswap f/ fsin
   fover fover f/ fsin f>rgb
 ;
 
