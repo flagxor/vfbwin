@@ -53,7 +53,7 @@ int main() {
       }
     }
     lseek(fd, 0, SEEK_SET);
-    if (write(fd, buffer, WIDTH * HEIGHT * 4 / 20) < 0) {
+    if (write(fd, buffer, WIDTH * HEIGHT * 4) < 0) {
       return 0;
     }
     offset += 1;

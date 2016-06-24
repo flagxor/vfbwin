@@ -146,6 +146,7 @@ int vfbwin_start(
   }
   assert(multithreaded);
   pthread_create(&vfbwin_pthread, NULL, vfbwin_thread, NULL);
+  return 0;
 }
 
 void vfbwin_stop(void) {
