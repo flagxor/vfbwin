@@ -55,6 +55,8 @@ test2a: vfbwin 4spire
 test2b: vfbwin 4spire
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire mmap
 
+pi: 4spire pattern
+
 clean:
 	rm -f vfbwin 4spire pattern
 	rm -rf *.dSYM
