@@ -1,10 +1,13 @@
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <assert.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 #define WIDTH 1024
@@ -23,14 +26,26 @@ static int clip(double x) {
 }
 
 
-int main() {
-  unsigned char *buffer = (unsigned char *) malloc(WIDTH * HEIGHT * 4);
-
+int main(int argc, char *argv[]) {
   int fd = open("dev/fb0", O_RDWR);
   if (fd < 0) {
     fprintf(stderr, "cant open device\n");
     return 1;
   }
+
+  unsigned char *buffer;
+
+  int map = 0;
+  if (argc > 1 && strcmp(argv[1], "mmap") == 0) {
+    map = 1;
+    buffer = mmap(0, WIDTH * HEIGHT * 4, PROT_WRITE, MAP_SHARED, fd, 0);
+  } else if (argc > 1 && strcmp(argv[1], "write") == 0) {
+    buffer = (unsigned char *) malloc(WIDTH * HEIGHT * 4);
+  } else {
+    fprintf(stderr, "usage: 4spire mmap/write\n");
+    return 1;
+  }
+  assert(buffer);
 
   int i, j;
   int offset = 0;
@@ -52,9 +67,13 @@ int main() {
         pos += 4;
       }
     }
-    lseek(fd, 0, SEEK_SET);
-    if (write(fd, buffer, WIDTH * HEIGHT * 4) < 0) {
-      return 0;
+    if (map) {
+      msync(buffer, WIDTH * HEIGHT * 4, MS_SYNC);
+    } else {
+      lseek(fd, 0, SEEK_SET);
+      if (write(fd, buffer, WIDTH * HEIGHT * 4) < 0) {
+        return 0;
+      }
     }
     offset += 1;
   }

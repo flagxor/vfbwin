@@ -41,7 +41,10 @@ test2: vfbwin
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire.fs
 
 test2a: vfbwin 4spire
-	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire write
+
+test2b: vfbwin 4spire
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire mmap
 
 clean:
 	rm -f vfbwin 4spire
