@@ -23,7 +23,7 @@ else
 	MAIN=main_x11.c
 endif
 
-all: vfbwin 4spire
+all: vfbwin 4spire pattern
 
 vfbwin: vfbwin.c $(MAIN)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
@@ -31,11 +31,20 @@ vfbwin: vfbwin.c $(MAIN)
 4spire: 4spire.c
 	$(CC) -g -O2 $^ -o $@ -lm
 
+pattern: pattern.c
+	$(CC) -g -O2 $^ -o $@ -lm
+
 mount: vfbwin
 	mkdir -p dev/ && ./vfbwin
 
 test1: vfbwin
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./pattern.fs
+
+test1a: vfbwin pattern
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./pattern write
+
+test1b: vfbwin pattern
+	mkdir -p dev/ && ./vfbwin& sleep 1 && ./pattern mmap
 
 test2: vfbwin
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire.fs
@@ -47,6 +56,6 @@ test2b: vfbwin 4spire
 	mkdir -p dev/ && ./vfbwin& sleep 1 && ./4spire mmap
 
 clean:
-	rm -f vfbwin 4spire
+	rm -f vfbwin 4spire pattern
 	rm -rf *.dSYM
 	if [ -d dev ]; then rmdir dev; fi
