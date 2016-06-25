@@ -45,4 +45,5 @@ test2a: vfbwin 4spire
 
 clean:
 	rm -f vfbwin 4spire
+	rm -rf *.dSYM
 	if [ -d dev ]; then rmdir dev; fi

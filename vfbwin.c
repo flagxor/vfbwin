@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <signal.h>
 
 #define VFBWIN_MOUNT_DIR "dev"
 #define VFBWIN_DEV_PATH "/fb0"
@@ -122,8 +124,7 @@ static struct fuse_operations vfbwin_ops = {
 };
 
 static void *vfbwin_thread(void *arg) {
-  int res;
-  res = fuse_loop_mt(vfbwin_fuse);
+  fuse_loop_mt(vfbwin_fuse);
   fuse_teardown(vfbwin_fuse, vfbwin_mountpoint);
   return 0;
 }
@@ -138,6 +139,9 @@ int vfbwin_start(
   vfbwin_vsync = vsync;
   char *argv[] = {"vfbwin", "-f", VFBWIN_MOUNT_DIR};
   int multithreaded;
+#if defined(__APPLE__)
+  system("umount dev");
+#endif
   vfbwin_fuse = fuse_setup(
       3, argv, &vfbwin_ops, sizeof(vfbwin_ops),
       &vfbwin_mountpoint, &multithreaded, 0);
@@ -152,7 +156,7 @@ int vfbwin_start(
 void vfbwin_stop(void) {
   assert(vfbwin_pthread != 0);
   fuse_exit(vfbwin_fuse);
-  open(VFBWIN_MOUNT_DIR, O_RDONLY);
+  kill(getpid(), SIGHUP);
   pthread_join(vfbwin_pthread, 0);
   vfbwin_pthread = 0;
 }

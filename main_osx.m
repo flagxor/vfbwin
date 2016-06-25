@@ -76,7 +76,6 @@
 }
 
 - (void) mouseDown: (NSEvent*) theEvent {
-  vfbwin_stop();
   [NSApp performSelector:@selector(terminate:) withObject:nil afterDelay:0.0];
 }
 
@@ -116,6 +115,7 @@
 }
 
 - (void)dealloc {
+  vfbwin_stop();
   [window release];
   [super dealloc];
 }
